@@ -1,0 +1,52 @@
+// Nuki Lockstate script by BerndHassenzahl@gmail.com
+// 
+// erstmal alle Variablen definieren
+var request = require('request');
+// hier braucht Ihr die IP eurer Bridge, die nukiID und das Token, ihr findet beides nur in der App, unter Verwaltung/Bridge..Hab mir n Wolf gesucht..( Developer auf ON! )
+var url = 'http://IPEurerBridge:8080/lockState?&nukiId=xxxxxxxx&token=yyyyyyy';
+var state;
+var stateName;
+var battery;
+var success;
+var idstate = 'Nuki.lockstate.state';
+var idstateName = 'Nuki.lockstate.stateName';
+var idbattery = 'Nuki.lockstate.batteryCritical';
+var idsuccess = 'Nuki.lockstate.success';
+
+// die objekte in IOBroker anlegen, zu finden unter javascript.0.Nuki.lockstate
+createState('Nuki.lockstate.state', {
+    name: 'state',
+    });    
+createState('Nuki.lockstate.stateName', {
+    name: 'stateName',
+    });    
+createState('Nuki.lockstate.batteryCritical', {
+ name: 'batteryCritical',
+    });    
+createState('Nuki.lockstate.success', {
+    name: 'success',
+    });
+
+// jetzt die Funktion zum auslesen der json
+function lockstate() { 
+request(url, function ( err, state, body){
+    if (err) {
+        log("Fehler aufgetreten: " + err);
+    } else {
+    var obj = JSON.parse(body);
+// zuordnen der Variablen
+    state = obj.state;
+    stateName = obj.stateName;
+    battery = obj.batteryCritical;
+    success = obj.success;
+// Setzen der Werte in die Objekte
+    setState(idstate, state);
+    setState(idstateName, stateName);
+    setState(idbattery, battery);
+    setState(idsuccess, success);
+    } 
+});
+}
+// und das machen wir jede Minute... 
+schedule('*/1 * * * *', lockstate);
+
