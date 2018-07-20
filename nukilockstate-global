@@ -1,4 +1,4 @@
-// Nuki Lockstate script by BerndHassenzahl@gmail.com
+// Nuki Lockstate script by BerndHassenzahl
 // 
 // erstmal alle Variablen definieren
 var request = require('request');
